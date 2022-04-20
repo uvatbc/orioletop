@@ -1,0 +1,6 @@
+[submodule "orioledb"]
+	path = orioledb
+	url = git@github.com:orioledb/orioledb.git
+[submodule "postgresql"]
+	path = postgresql
+	url = git@github.com:orioledb/postgres.git
