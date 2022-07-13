@@ -5,12 +5,30 @@ export CHECK_TYPE
 GITHUB_WORKSPACE=$(shell pwd)
 export GITHUB_WORKSPACE
 
-local:
-	bash ./orioledb/ci/build.sh
+TARGET?=local
+
+DOCKER_PREFIX=docker run \
+		--rm -it \
+		-v ${GITHUB_WORKSPACE}:/src \
+		-w /src \
+		accupara/orioledb:ubuntu_2004
 
 in_docker:
-	docker run --rm -it \
-		-v ${GITHUB_WORKSPACE}:/tmp/src \
-		-w /tmp/src \
-		accupara/orioledb:ubuntu_2004 \
-		make local
+	${DOCKER_PREFIX} \
+		make ${TARGET}
+
+it:
+	${DOCKER_PREFIX} \
+		bash
+
+local:
+	./build.sh
+
+ci:
+	ls -la ./orioledb/ci/build.sh
+	bash -c ./orioledb/ci/build.sh
+
+test:
+	cd postgresql ; ./configure --disable-debug --disable-cassert --enable-tap-tests --with-icu --prefix=$(shell readlink -f ..)/pgsql
+	cd pgbld ; make -j `nproc`
+	cd pgbld ; make -j `nproc` install
